@@ -22,3 +22,31 @@ class Window:
     def close(self):
         self.__running = False
 
+    def draw_line(self, line, fill_color):
+        if not isinstance(line, Line):
+            raise ValueError('Must be a Line instance')
+        line.draw(self.__canvas, fill_color)
+
+
+class Point:
+    def __init__(self, x, y):
+        self.__x = x
+        self.__y = y
+
+    def get_x(self):
+        return self.__x
+
+    def get_y(self):
+        return self.__y
+
+
+class Line:
+    def __init__(self, p1, p2):
+        if not isinstance(p1, Point) and not isinstance(p2, Point):
+            raise ValueError('Inputs must be Point instances')
+        self.__p1 = p1
+        self.__p2 = p2
+
+    def draw(self, Canvas, fill_color):
+        Canvas.create_line(self.__p1.get_x(), self.__p1.get_y(), self.__p2.get_x(), self.__p2.get_y(), fill=fill_color, width=2)
+
