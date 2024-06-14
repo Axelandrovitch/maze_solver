@@ -1,9 +1,7 @@
-from tkinter import Tk, BOTH, Canvas
+from graphics import Window
 
-class Window:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.root = Tk()
-        self.canvas = Canvas()
+def main():
+    win = Window(800, 600)
+    win.wait_for_close()
 
+main()
