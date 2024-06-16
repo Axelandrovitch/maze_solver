@@ -24,7 +24,7 @@ class Window:
 
     def draw_line(self, line, fill_color):
         if not isinstance(line, Line):
-            raise ValueError('Must be a Line instance')
+            raise TypeError('Must be a Line instance')
         line.draw(self.__canvas, fill_color)
 
 
@@ -43,10 +43,41 @@ class Point:
 class Line:
     def __init__(self, p1, p2):
         if not isinstance(p1, Point) and not isinstance(p2, Point):
-            raise ValueError('Inputs must be Point instances')
+            raise TypeError('Inputs must be Point instances')
         self.__p1 = p1
         self.__p2 = p2
 
     def draw(self, Canvas, fill_color):
         Canvas.create_line(self.__p1.get_x(), self.__p1.get_y(), self.__p2.get_x(), self.__p2.get_y(), fill=fill_color, width=2)
 
+
+class Cell:
+    def __init__(self, top_left, bottom_right, win):
+        if not isinstance(top_left, Point) or not isinstance(bottom_right, Point):
+            raise TypeError('Inputs must be points instances')
+        self.has_left_wall = True
+        self.has_right_wall = True
+        self.has_top_wall = True
+        self.has_bottom_wall = True
+        self.top_left = top_left
+        self.bottom_right = bottom_right
+        self.bottom_left = Point(top_left.get_x(), bottom_right.get_y())
+        self.top_right = Point(bottom_right.get_x(), top_left.get_y())
+        self._win = win 
+
+    def draw(self):
+        if self.has_left_wall:
+            left_wall = Line(self.top_left, self.bottom_left)
+            self._win.draw_line(line=left_wall, fill_color="black")
+            
+        if self.has_right_wall:
+            right_wall = Line(self.top_right, self.bottom_right)
+            self._win.draw_line(line=right_wall, fill_color="black")
+
+        if self.has_top_wall:
+            top_wall = Line(self.top_left, self.top_right)
+            self._win.draw_line(line=top_wall, fill_color="black")
+
+        if self.has_bottom_wall:
+            bottom_wall = Line(self.bottom_left, self.bottom_right)
+            self._win.draw_line(line=bottom_wall, fill_color="black")
