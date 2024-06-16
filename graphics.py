@@ -42,7 +42,7 @@ class Point:
 
 class Line:
     def __init__(self, p1, p2):
-        if not isinstance(p1, Point) and not isinstance(p2, Point):
+        if not isinstance(p1, Point) or not isinstance(p2, Point):
             raise TypeError('Inputs must be Point instances')
         self.__p1 = p1
         self.__p2 = p2
