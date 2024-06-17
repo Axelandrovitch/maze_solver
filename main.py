@@ -19,6 +19,8 @@ def main():
     cell2.has_bottom_wall = False
     cell2.draw()
 
+    cell1.draw_move(to_cell=cell2)
+
     win.wait_for_close()
 
 main()

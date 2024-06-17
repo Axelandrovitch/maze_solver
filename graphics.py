@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+import math
 
 class Window:
     def __init__(self, width, height):
@@ -81,3 +82,25 @@ class Cell:
         if self.has_bottom_wall:
             bottom_wall = Line(self.bottom_left, self.bottom_right)
             self._win.draw_line(line=bottom_wall, fill_color="black")
+
+    def draw_move(self, to_cell, undo=False):
+        color = "red" if undo else "gray"
+        center_1 = cell_center(self)
+        center_2 = cell_center(to_cell)
+        center_to_center = Line(center_1, center_2)
+        self._win.draw_line(line=center_to_center, fill_color=color)
+
+
+#helper functions
+
+
+def cell_center(cell: Cell) -> Point:
+    x1 = cell.bottom_right.get_x()
+    x2 = cell.top_left.get_x()
+    y1 = cell.bottom_right.get_y()
+    y2 = cell.top_left.get_y()
+    x = max(x1, x2) - (abs(x1 - x2)/2)
+    y = max(y1, y2) - (abs(y1 - y2)/2)
+    print(x)
+    print(y)
+    return Point(x, y)
