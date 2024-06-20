@@ -115,6 +115,4 @@ def cell_center(cell: Cell) -> Point:
     y2 = cell.top_left.get_y()
     x = max(x1, x2) - (abs(x1 - x2)/2)
     y = max(y1, y2) - (abs(y1 - y2)/2)
-    print(x)
-    print(y)
     return Point(x, y)
