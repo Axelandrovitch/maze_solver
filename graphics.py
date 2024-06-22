@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+import time
 
 class Window:
     def __init__(self, width, height):
@@ -99,6 +100,7 @@ class Maze:
         self.cell_size_y = cell_size_y
         self.cells = []
         self.win = win
+        self._create_cells()
 
     def _create_cells(self):
         for col in range(self.num_cols):
@@ -114,11 +116,21 @@ class Maze:
                 win=self.win)
 
                 column.append(cell)
+                self._draw_cell(row, col)
             self.cells.append(column)
+    def _draw_cell(self, i, j):
+        if 0 <= i < self.num_rows and 0 <= j < self.num_cols:
 
-    def _draw_cells(self, i, j):
+            cell = self.cells[i][j]
+            cell.draw()
+            self._animate()
+        else:
+            print("Index out of bounds")
 
+    def _animate(self):
+        self.win.redraw()
 
+        time.sleep(0.05)
 
 
 
