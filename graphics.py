@@ -1,5 +1,4 @@
 from tkinter import Tk, BOTH, Canvas
-import math
 
 class Window:
     def __init__(self, width, height):
@@ -102,7 +101,25 @@ class Maze:
         self.win = win
 
     def _create_cells(self):
-        
+        for col in range(self.num_cols):
+            column = []
+            for row in range(self.num_rows):
+                top_left_x = self.x1 + col * self.cell_size_x
+                top_left_y = self.y1 + row * self.cell_size_y
+                bottom_right_x = top_left_x + self.cell_size_x
+                bottom_right_y = top_left_y + self.cell_size_y
+
+                cell = Cell(top_left=Point(x=top_left_x, y=top_left_y),
+                bottom_right=Point(x=bottom_right_x, y=bottom_right_y),
+                win=self.win)
+
+                column.append(cell)
+            self.cells.append(column)
+
+    def _draw_cells(self, i, j):
+
+
+
 
 
 #helper functions
