@@ -67,21 +67,29 @@ class Cell:
         self._win = win 
 
     def draw(self):
+        left_wall = Line(self.top_left, self.bottom_left)
+        right_wall = Line(self.top_right, self.bottom_right)
+        top_wall = Line(self.top_left, self.top_right)
+        bottom_wall = Line(self.bottom_left, self.bottom_right)
         if self.has_left_wall:
-            left_wall = Line(self.top_left, self.bottom_left)
             self._win.draw_line(line=left_wall, fill_color="black")
+        else:
+            self._win.draw_line(line=left_wall, fill_color="white")
             
         if self.has_right_wall:
-            right_wall = Line(self.top_right, self.bottom_right)
             self._win.draw_line(line=right_wall, fill_color="black")
+        else:
+             self._win.draw_line(line=right_wall, fill_color="white")
 
         if self.has_top_wall:
-            top_wall = Line(self.top_left, self.top_right)
             self._win.draw_line(line=top_wall, fill_color="black")
+        else:
+            self._win.draw_line(line=top_wall, fill_color="white")
 
         if self.has_bottom_wall:
-            bottom_wall = Line(self.bottom_left, self.bottom_right)
             self._win.draw_line(line=bottom_wall, fill_color="black")
+        else:
+            self._win.draw_line(line=bottom_wall, fill_color="white")
 
     def draw_move(self, to_cell, undo=False):
         color = "red" if undo else "gray"
@@ -101,6 +109,7 @@ class Maze:
         self.cells = []
         self.win = win
         self._create_cells()
+        self._break_entrance_and_exit()
 
     def _create_cells(self):
         for col in range(self.num_cols):
@@ -122,18 +131,24 @@ class Maze:
                 self._draw_cell(col, row)
 
     def _draw_cell(self, i, j):
-        if 0 <= i < self.num_rows and 0 <= j < self.num_cols:
-
-            cell = self.cells[i][j]
-            cell.draw()
-            self._animate()
-        else:
-            print("Index out of bounds")
+        cell = self.cells[i][j]
+        cell.draw()
+        self._animate()
 
     def _animate(self):
         self.win.redraw()
 
         time.sleep(0.05)
+
+    def _break_entrance_and_exit(self):
+        entrance_cell = self.cells[0][0]
+        exit_cell = self.cells[-1][-1]
+
+        entrance_cell.has_left_wall = False
+        self._draw_cell(i=0, j=0)
+        exit_cell.has_right_wall = False
+        self._draw_cell(i=-1, j=-1)
+
 
 
 
