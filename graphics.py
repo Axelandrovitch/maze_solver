@@ -116,8 +116,11 @@ class Maze:
                 win=self.win)
 
                 column.append(cell)
-                self._draw_cell(row, col)
             self.cells.append(column)
+        for col in range(self.num_cols):
+            for row in range(self.num_rows):
+                self._draw_cell(col, row)
+
     def _draw_cell(self, i, j):
         if 0 <= i < self.num_rows and 0 <= j < self.num_cols:
 
