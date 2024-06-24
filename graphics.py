@@ -1,5 +1,6 @@
 from tkinter import Tk, BOTH, Canvas
 import time
+import random
 
 class Window:
     def __init__(self, width, height):
@@ -53,7 +54,7 @@ class Line:
 
 
 class Cell:
-    def __init__(self, top_left, bottom_right, win):
+    def __init__(self, top_left, bottom_right, win, visited=False):
         if not isinstance(top_left, Point) or not isinstance(bottom_right, Point):
             raise TypeError('Inputs must be points instances')
         self.has_left_wall = True
@@ -65,6 +66,7 @@ class Cell:
         self.bottom_left = Point(top_left.get_x(), bottom_right.get_y())
         self.top_right = Point(bottom_right.get_x(), top_left.get_y())
         self._win = win 
+        self.visited = visited
 
     def draw(self):
         left_wall = Line(self.top_left, self.bottom_left)
@@ -110,6 +112,8 @@ class Maze:
         self.win = win
         self._create_cells()
         self._break_entrance_and_exit()
+        self._break_walls_r(0, 0)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for col in range(self.num_cols):
@@ -138,7 +142,7 @@ class Maze:
     def _animate(self):
         self.win.redraw()
 
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     def _break_entrance_and_exit(self):
         entrance_cell = self.cells[0][0]
@@ -149,7 +153,99 @@ class Maze:
         exit_cell.has_right_wall = False
         self._draw_cell(i=-1, j=-1)
 
+    def _break_walls_r(self, i, j):
+        current_cell = self.cells[i][j]
+        current_cell.visited = True
+        while True:
+            to_visit = []
+            if i + 1 < len(self.cells) and not self.cells[i + 1][j].visited:
+                to_visit.append((i + 1, j))
+            if j + 1 < len(self.cells[0]) and not self.cells[i][j + 1].visited:
+                to_visit.append((i, j + 1))
+            if i - 1 >= 0 and not self.cells[i - 1][j].visited:
+                to_visit.append((i - 1, j))
+            if j - 1 >= 0 and not self.cells[i][j - 1].visited:
+                to_visit.append((i, j - 1))
 
+            if len(to_visit) == 0:
+                self._draw_cell(i, j)
+                return
+
+            next_cell = random.choice(to_visit)
+            ni, nj = next_cell
+            if ni == i + 1:
+                current_cell.has_bottom_wall = False
+                self.cells[ni][nj].has_top_wall = False
+            elif ni == i - 1:
+                current_cell.has_top_wall = False
+                self.cells[ni][nj].has_bottom_wall = False
+            elif nj == j + 1:
+                current_cell.right_wall = False
+                self.cells[ni][nj].has_left_wall = False
+            elif nj == j - 1:
+                current_cell.has_left_wall = False
+                self.cells[ni][nj].has_right_wall = False
+            self._break_walls_r(ni, nj)
+
+    def _reset_cells_visited(self):
+        for col in self.cells:
+            for cell in col:
+                cell.visited = False
+
+    def solve(self):
+        self._solve_r(i=0, j=0)
+
+    def _solve_r(self, i, j):
+        self._animate()
+        current_cell = self.cells[i][j]
+        current_cell.visited = True
+        if current_cell is self.cells[-1][-1]:
+            return True
+        if (
+            i > 0
+            and not self.cells[i][j].has_left_wall
+            and not self.cells[i - 1][j].visited
+        ):
+            self.cells[i][j].draw_move(self.cells[i - 1][j])
+            if self._solve_r(i - 1, j):
+                return True
+            else:
+                self.cells[i][j].draw_move(self.cells[i - 1][j], True)
+
+        if (
+            i < self.num_cols - 1
+            and not self.cells[i][j].has_right_wall
+            and not self.cells[i + 1][j].visited
+        ):
+            self.cells[i][j].draw_move(self.cells[i + 1][j])
+            if self._solve_r(i + 1, j):
+                return True
+            else:
+                self.cells[i][j].draw_move(self.cells[i + 1][j], True)
+
+        if (
+            j > 0
+            and not self.cells[i][j].has_top_wall
+            and not self.cells[i][j - 1].visited
+        ):
+            self.cells[i][j].draw_move(self.cells[i][j - 1])
+            if self._solve_r(i, j - 1):
+                return True
+            else:
+                self.cells[i][j].draw_move(self.cells[i][j - 1], True)
+
+        if (
+            j < self.num_rows - 1
+            and not self.cells[i][j].has_bottom_wall
+            and not self.cells[i][j + 1].visited
+        ):
+            self.cells[i][j].draw_move(self.cells[i][j + 1])
+            if self._solve_r(i, j + 1):
+                return True
+            else:
+                self.cells[i][j].draw_move(self.cells[i][j + 1], True)
+
+        return False
 
 
 #helper functions
@@ -163,3 +259,4 @@ def cell_center(cell: Cell) -> Point:
     x = max(x1, x2) - (abs(x1 - x2)/2)
     y = max(y1, y2) - (abs(y1 - y2)/2)
     return Point(x, y)
+
